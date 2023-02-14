@@ -8,8 +8,8 @@ var currentDay;
 const monthsName = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 function getDateOfLastSunday(today) {
-    let preSkip = today.getDay();
-    let diff = today.getDate()  - preSkip;
+    let dayNo = today.getDay();
+    let diff = today.getDate() - dayNo;
     return new Date(today.setDate(diff));
 }
 
@@ -18,7 +18,7 @@ function getDaysInMonth(date) {
 }
 
 
-function renderCalendar(date, preSkip = 0, postSkip = 0) {
+function renderCalendar(date, NoOfDaysToSkipForFirstWeekOfMonth = 0) {
 
     let dateEntry = ""
     dateEntry += "<tr>";
@@ -27,14 +27,14 @@ function renderCalendar(date, preSkip = 0, postSkip = 0) {
     let j = 0;
     let val = date.getDate();
 
-    for (; j < preSkip; j++)
+    for (; j < NoOfDaysToSkipForFirstWeekOfMonth; j++)
         dateEntry += `<td>_</td>`;
 
-    for (let i = j; i < 7 ; i++) {
-        if (val <= getDaysInMonth(date) && i>=postSkip){
-            dateEntry += `<td>${val}</td>`;
-            val++;
-        }
+    for (let i = j; i < 7; i++) {
+        if (val <= getDaysInMonth(date))
+            dateEntry += `<td>${val++}</td>`;
+        else
+            dateEntry += `<td>_</td>`;
     }
 
     dateEntry += "</tr>";
@@ -43,15 +43,15 @@ function renderCalendar(date, preSkip = 0, postSkip = 0) {
 
 prevBtn.addEventListener("click", function () {
 
-    if(currentDay.getDate() == 1){
+    if (currentDay.getDate() == 1) {
         currentDay.setDate(currentDay.getDate() - 1);
         renderCalendar(getDateOfLastSunday(currentDay));
         return;
     }
-    else if ((currentDay.getDate() - 7) >= 1){
+    else if ((currentDay.getDate() - 7) >= 1) {
         currentDay.setDate(currentDay.getDate() - 7);
     }
-    else if ((currentDay.getDate() - 7) < 1){
+    else if ((currentDay.getDate() - 7) < 1) {
         currentDay = new Date(currentDay.getFullYear(), currentDay.getMonth(), 1);
     }
     renderCalendar(currentDay, currentDay.getDay());
@@ -59,12 +59,12 @@ prevBtn.addEventListener("click", function () {
 
 nextBtn.addEventListener("click", function () {
 
-    if(currentDay.getDate() == 1){
+    if (currentDay.getDate() == 1) {
         currentDay = getDateOfLastSunday(currentDay);
         console.log(currentDay)
     }
-    else if(getDaysInMonth(currentDay)  - currentDay.getDate() < 7){
-        currentDay = new Date(currentDay.getFullYear(), currentDay.getMonth()+1, 1);
+    else if (getDaysInMonth(currentDay) - currentDay.getDate() < 7) {
+        currentDay = new Date(currentDay.getFullYear(), currentDay.getMonth() + 1, 1);
         renderCalendar(currentDay, currentDay.getDay());
         return;
     }
@@ -75,13 +75,13 @@ nextBtn.addEventListener("click", function () {
 
 function onload() {
     currentDay = new Date();
-    //currentDay = new Date(2023,02,28);
-    if(currentDay.getMonth() != getDateOfLastSunday(currentDay).getMonth()){
+    //currentDay = new Date(2023,02,04);
+    if (currentDay.getMonth() != getDateOfLastSunday(currentDay).getMonth()) {
         let firstDateOfCurrentMonth = new Date(currentDay.getFullYear(), currentDay.getMonth(), 1);
-        renderCalendar(firstDateOfCurrentMonth,firstDateOfCurrentMonth.getDay());
+        renderCalendar(firstDateOfCurrentMonth, firstDateOfCurrentMonth.getDay());
     }
     else
-    renderCalendar(getDateOfLastSunday(currentDay));        
+        renderCalendar(getDateOfLastSunday(currentDay));
 }
 
 onload()
